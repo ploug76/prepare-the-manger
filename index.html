@@ -197,15 +197,15 @@ function taper(x1,y1,w1,x2,y2,w2,fill,shadeC){const dx=x2-x1,dy=y2-y1,L=Math.hyp
 function quadLeg(hx,hy,L,p,amp,Q,far,front,Hh){const s=Math.sin(p),c=Math.cos(p),th=amp*(Q.sw||0.34)*s,kn=amp*(Q.kb||0.75)*Math.max(0,c);
   const st=c<=0?1/Math.cos(th):1,l1=L*0.48*st,l2=L*0.52*st,a1=th+(front?0.08:-0.3)*kn,a2=th-kn*(front?1:0.55);
   const kx=hx+Math.sin(a1)*l1,ky=hy+Math.cos(a1)*l1,fx=kx+Math.sin(a2)*l2,fy=Math.min(hy+L,ky+Math.cos(a2)*l2);
-  const W1=Q.wt*Hh,W2=Q.ws*Hh;
-  o.save();taper(hx,hy-W1*0.3,W1*1.3,kx,ky,W2*1.15,Q.ct,'rgba(0,0,0,.34)');if(Q.knee){o.fillStyle=Q.cs;o.beginPath();o.ellipse(kx,ky,W2*0.85,W2*1.05,0,0,TAU);o.fill()}
-  taper(kx,ky,W2*1.1,fx,fy-W2*0.5,W2*0.8,Q.cs,'rgba(0,0,0,.34)');
-  o.translate(fx,fy);o.rotate(a2*0.6);o.fillStyle=Q.hf;o.beginPath();o.moveTo(-W2*0.62,-W2*0.95);o.lineTo(W2*0.7,-W2*0.95);o.lineTo(W2*0.98,0);o.lineTo(-W2*0.72,0);o.closePath();o.fill();o.restore();
+  const W1=Q.wt*Hh,W2=Q.ws*Hh;if(!Q.ctD){Q.ctD=mix(Q.ct,-0.3);Q.csD=mix(Q.cs,-0.3);Q.hfD=mix(Q.hf,-0.3)}const CT=far?Q.ctD:Q.ct,CS=far?Q.csD:Q.cs,HF=far?Q.hfD:Q.hf;
+  o.save();taper(hx,hy-W1*0.3,W1*1.3,kx,ky,W2*1.15,CT,'rgba(0,0,0,.34)');if(Q.knee){o.fillStyle=CS;o.beginPath();o.ellipse(kx,ky,W2*0.85,W2*1.05,0,0,TAU);o.fill()}
+  taper(kx,ky,W2*1.1,fx,fy-W2*0.5,W2*0.8,CS,'rgba(0,0,0,.34)');
+  o.translate(fx,fy);o.rotate(a2*0.6);o.fillStyle=HF;o.beginPath();o.moveTo(-W2*0.62,-W2*0.95);o.lineTo(W2*0.7,-W2*0.95);o.lineTo(W2*0.98,0);o.lineTo(-W2*0.72,0);o.closePath();o.fill();o.restore();
   if(far){/* far legs sit in the body's shadow */}}
 function drawQuad(x,y,f,ph,mv,k,o2={}){const Q=QD[k];if(!Q)return false;const m=META[Q.b];if(!m||!IMG[Q.b])return false;const H=o2.h||Q.h,sc=H/m.h,amp=mv?1:0,Hh=m.h,W=m.w;
   const bob=amp*0.012*Hh*Math.cos(2*ph);o.save();o.translate(x,y);o.scale(f*sc,sc);o.translate(-m.ax*W,-Hh);
   const [hb,fr]=Q.legs,fs=Q.fs*W;
-  o.save();o.filter='brightness(0.7)';quadLeg(hb[0]*W-fs,hb[1]*Hh,(1-hb[1])*Hh,ph+Math.PI,amp,Q,true,false,Hh);quadLeg(fr[0]*W-fs,fr[1]*Hh,(1-fr[1])*Hh,ph,amp,Q,true,true,Hh);o.restore();
+  o.save();quadLeg(hb[0]*W-fs,hb[1]*Hh,(1-hb[1])*Hh,ph+Math.PI,amp,Q,true,false,Hh);quadLeg(fr[0]*W-fs,fr[1]*Hh,(1-fr[1])*Hh,ph,amp,Q,true,true,Hh);o.restore();
   quadLeg(hb[0]*W,hb[1]*Hh,(1-hb[1])*Hh,ph,amp,Q,false,false,Hh);quadLeg(fr[0]*W,fr[1]*Hh,(1-fr[1])*Hh,ph+Math.PI,amp,Q,false,true,Hh);
   o.drawImage(im_(Q.b),0,bob);o.restore();return true}
 function drawSheep(x,y,f,ph,mv,o2={}){drawQuad(x,y,f,ph,mv,o2.col?'goat':(o2.lamb?'lamb':'sheep'),o2);
@@ -796,7 +796,7 @@ function drawWin(){const land=LY.land;menuBG();drawNativity(sceneCtx,{ph:t*3});c
 // ---------- My Nativity + 10-second replay + share card
 let replayT=0;function startReplay(){replayT=0;state='replay';SFX.place()}
 function drawSceneScreen(){const land=LY.land;menuBG();backBtn();goldTitle('My Nativity',CW/2,SAFE.t+30,26);
-  drawNativity(sceneCtx,{ph:t*3});const R=sceneArea(SAFE.t+62,land?70:150);blit(sceneCv,R.x,R.y,R.w,R.h);frame2(R);
+  drawNativity(sceneCtx,{ph:t*3});const R=sceneArea(SAFE.t+62,land?100:150);blit(sceneCv,R.x,R.y,R.w,R.h);frame2(R);
   const n=Object.keys(SCENE.pieces).length,d=(SCENE.decos||[]).length;let y=R.y+R.h+20;txt(n+' of 8 pieces · '+d+' Advent decorations',CW/2,y,16,'#bdf3ff','center',{st:0});y+=18;
   if(!n){txt('Play the levels to earn your pieces!',CW/2,R.y+R.h/2,18,'#fff')}
   const w=Math.min(CW-24,460),bw=(w-10)/2,x0=(CW-w)/2,by=Math.min(y+6,CH-SAFE.b-56);button('replay',x0,by,bw,50,'▶ 10-second replay','#3b6fb0',()=>startReplay(),18);button('card',x0+bw+10,by,bw,50,'Save share card','#2f7f4f',()=>shareCard(),18)}
@@ -952,5 +952,5 @@ if(window.__QA){
     if(A.tgtT>14&&tg.o&&typeof tg.o==='object'){H.x=tg.x;H.y=tg.y;H.vy=0;A.assists++;A.tgtT=0}}
 }
 
-window.__VERSION=20;
+window.__VERSION=22;
 </script></body></html>
