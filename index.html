@@ -384,7 +384,7 @@ function build(n){const L=LEVELS[n-1],w=newWorld(L),r=mulberry(n*7919+11);
     w.house=house(w,1640,110,46,{door:1,star:1});
     [[330,GY-26],[480,GY-34],[515,GY-60],[790,GY-28],[935,GY-40],[960,GY-66],[1290,GY-28],[1450,GY-36],[1480,GY-62]].forEach(([x,y])=>item(w,'spark',x,y,{obj:'spark'}));
     ['gold','frankincense','myrrh'].forEach((k,i)=>spot(w,'gift',1580+i*22,GY,{obj:'gift',gift:k,need:['spark']}));[680,1080].forEach(x=>w.thorns.push({x}));
-    w.followers.push({k:'magus',look:'wise2',x:24,y:GY,f:1,ph:0},{k:'magus',look:'wise3',x:16,y:GY,f:1,ph:0},{k:'camel',x:10,y:GY,f:1,ph:0,blanket:'#c0392b'},{k:'camel',x:0,y:GY,f:1,ph:0,blanket:'#3b4fa8'});w.star={x:200,y:30};w.goal={x:1700,need:['spark','gift']};bgTown(w,r,0,1)}
+    w.followers.push({k:'magus',look:'wise2',x:24,y:GY,f:1,ph:0},{k:'magus',look:'wise3',x:16,y:GY,f:1,ph:0},{k:'camel',x:10,y:GY,f:1,ph:0,blanket:'#c0392b'},{k:'camel',x:0,y:GY,f:1,ph:0,blanket:'#3b4fa8'});w.start.x=150;w.followers.forEach((f,i)=>f.x=150-18*(i+1));w.star={x:260,y:30};w.goal={x:1700,need:['spark','gift']};bgTown(w,r,0,1)}
   if(n===8){[[520,28],[1000,30]].forEach(a=>gap(w,...a));
     [[300,26,40],[700,30,44],[785,52,36],[1150,26,40],[1225,46,36]].forEach(([x,h,wd])=>plat(w,x,GY-h,wd,'rock'));house(w,1700,60,30);house(w,1840,80,34);
     [[200,GY],[320,GY-26],[620,GY],[800,GY-52],[1170,GY-26],[1240,GY-46],[1660,GY],[1730,GY-30]].forEach(([x,y])=>spot(w,'candle',x,y,{obj:'candle'}));
@@ -497,7 +497,7 @@ const SPD=66,JV=-222,GRAV=560;
 function startLevel(n){level=clamp(n,1,NL);const L=Lv();song=L.song;step=0;W=build(level);
   maxHearts=EASY?5:3;hearts=maxHearts;parts=[];floats=[];bubbles=[];exitMsgT=0;finT=-1;ST={t:0};for(const ob of L.obj)ST[ob.id]=0;
   H={x:W.start.x,y:W.start.y,vx:0,vy:0,f:1,onG:true,inv:0,ph:0,look:LOOKS[L.hero],safe:{x:W.start.x,y:W.start.y},coy:0,jb:0,kx:0};
-  trail=[];for(let i=120;i>=0;i--)trail.push({x:H.x-i,y:GY});
+  trail=[];for(let i=200;i>=0;i--)trail.push({x:H.x-i,y:GY});
   camFollow(true);paused=false;
   const pages=[...(L.pre||[]),{who:'verse',title:(L.bonus?'Bonus: ':'Level '+L.n+': ')+L.name,text:L.verse,ref:L.ref},{who:'how',title:'How to play',text:L.how}];
   openStory(pages,()=>{state='play'})}
@@ -506,7 +506,7 @@ function objDone(id){return ST[id]>=objN(id)}
 function allDone(){return Lv().obj.every(q=>ST[q.id]>=q.n)}
 function needMet(s){return (s.need||[]).every(objDone)&&(s.seq===undefined||ST.inn===s.seq)}
 function camFollow(snap){if(W.type==='climb'){const tx=W.len<=VW?(W.len-VW)/2:clamp(H.x-VW/2,0,W.len-VW),ty=clamp(H.y-VH*0.62,W.top.y-70,GY-VH+30);camX=tx;camY=snap?ty:lerp(camY,ty,0.1);return}
-  const tx=clamp(H.x-VW*0.38+H.f*14,0,Math.max(0,W.len-VW));camX=snap?tx:lerp(camX,tx,0.12);const ty=Math.min(GY-VH+(LY.land?31:40),H.y-VH*0.58);camY=snap?ty:lerp(camY,ty,0.08)}
+  const car=W.followers.some(f=>f.k==='camel'),tx=clamp(H.x-VW*(car&&H.f>0?(LY.land?0.66:0.78):0.38)+H.f*14,0,Math.max(0,W.len-VW));camX=snap?tx:lerp(camX,tx,0.12);const ty=Math.min(GY-VH+(LY.land?31:40),H.y-VH*0.58);camY=snap?ty:lerp(camY,ty,0.08)}
 function part(x,y,n,col,o2={}){for(let i=0;i<n;i++){const a=rnd(0,Math.PI*2),sp=rnd(o2.min||10,o2.sp||50);parts.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp+(o2.up||0),life:rnd(0.4,o2.life||0.9),max:o2.life||0.9,c:Array.isArray(col)?pick(col):col,s:o2.s||1,g:o2.g??0,add:!!o2.add})}}
 function float(x,y,s,col='#ffe14a'){floats.push({x,y,s,col,life:1.4})}
 function bubble(who,s,dur=2.6){bubbles=bubbles.filter(b=>b.who!==who);bubbles.push({who,s,life:dur})}
@@ -541,7 +541,7 @@ function findNear(){let best=null,bd=1e9;
   for(const s of W.spots){if(s.done)continue;const dx=Math.abs(s.x-H.x),dy=Math.abs(s.y-H.y);if(dx<18&&dy<26&&dx<bd){bd=dx;best=s}}
   for(const a of W.npcs){if(!a.obj||a.calm)continue;const dx=Math.abs(a.x-H.x);if(dx<22&&Math.abs(a.y-H.y)<20&&dx<bd){bd=dx;best={npc:a,x:a.x,y:a.y}}}
   return best}
-function trailAt(back){const i=Math.max(0,trail.length-1-back);return trail[i]}
+function trailAt(back){const i=Math.max(0,trail.length-1-Math.round(back));return trail[i]}
 // ---------- main update
 function update(dt){t+=dt;if(toastT>0)toastT-=dt;if(shake>0)shake=Math.max(0,shake-dt*20);updParts(dt);
   for(const b of bubbles)b.life-=dt;bubbles=bubbles.filter(b=>b.life>0);for(const f of floats){f.life-=dt;f.y-=dt*14}floats=floats.filter(f=>f.life>0);
@@ -571,7 +571,7 @@ function update(dt){t+=dt;if(toastT>0)toastT-=dt;if(shake>0)shake=Math.max(0,sha
   for(const th of W.thorns)if(Math.abs(H.x-th.x)<7&&H.y>GY-9&&H.y<=GY+2)hurt(th.x);
   if(state!=='play')return;
   // trail for followers
-  const lt=trail[trail.length-1],d=Math.hypot(H.x-lt.x,H.y-lt.y);if(d>=1){const n=Math.min(40,Math.floor(d));for(let i=1;i<=n;i++)trail.push({x:lerp(lt.x,H.x,i/n),y:lerp(lt.y,H.y,i/n)});if(trail.length>900)trail.splice(0,trail.length-900)}
+  const lt=trail[trail.length-1],d=Math.hypot(H.x-lt.x,H.y-lt.y);if(d>48){const dx=H.x-lt.x,dy=H.y-lt.y;trail=trail.map(q=>({x:q.x+dx,y:Math.min(GY,q.y+dy)}));W.followers.forEach(fo=>{if(!fo.parked){fo.x+=dx;fo.y=Math.min(GY,fo.y+dy)}})}else if(d>=1){const n=Math.floor(d);for(let i=1;i<=n;i++)trail.push({x:lerp(lt.x,H.x,i/n),y:lerp(lt.y,H.y,i/n)});if(trail.length>900)trail.splice(0,trail.length-900)}
   // items
   for(const k of W.items){if(k.got)continue;if(Math.abs(k.x-H.x)<10&&Math.abs(k.y-(H.y-8))<16){k.got=true;ST[k.obj]=(ST[k.obj]||0)+1;SFX.pick();part(k.x,k.y-4,12,['#ffe08a','#fff'],{sp:30,add:true});
     if(level===2)readyHint();float(k.x,k.y-16,k.k==='tool'?k.tool[0].toUpperCase()+k.tool.slice(1)+'!':k.k==='straw'?'Straw!':k.k==='plank'?'Plank!':k.k==='note'?'♪':'✦');objToast(k.obj)}}
@@ -586,7 +586,7 @@ function update(dt){t+=dt;if(toastT>0)toastT-=dt;if(shake>0)shake=Math.max(0,sha
       else{s.wt=(s.wt||0)-dt;if(s.wt<=0){s.wt=rnd(1.5,4);s.walk=Math.random()<0.5;s.f=pick([1,-1])}if(s.walk){s.x+=s.f*5*dt;if(s.x<W.fold.x0+5){s.x=W.fold.x0+5;s.f=1}if(s.x>W.fold.x1-6){s.x=W.fold.x1-6;s.f=-1}}s.y=GY}
       const dx=s.x-ox;s.mv=Math.abs(dx)>0.02;if(Math.abs(dx)>0.05)s.f=dx>0?1:-1}}
   // followers (Mary on the donkey, the camels)
-  W.followers.forEach((fo,i)=>{const ox=fo.x;if(fo.until&&H.x>fo.until)fo.parked=true;if(!fo.parked){const p=trailAt(W.followers.slice(0,i+1).reduce((a,q)=>a+(q.k==='magus'?17:q.k==='camel'?30:24),0));fo.x=lerp(fo.x,p.x,Math.min(1,dt*7));fo.y=lerp(fo.y,Math.min(GY,p.y),Math.min(1,dt*9))}
+  W.followers.forEach((fo,i)=>{const ox=fo.x;if(fo.until&&H.x>fo.until)fo.parked=true;if(!fo.parked){const p=trailAt(W.followers.slice(0,i+1).reduce((a,q)=>a+(q.k==='magus'?17:q.k==='camel'?30:24)*(q.k==='donkeyMary'?1:clamp(VW/280,0.52,1)),0));fo.x=lerp(fo.x,p.x,Math.min(1,dt*7));fo.y=lerp(fo.y,Math.min(GY,p.y),Math.min(1,dt*9))}
     const dx=fo.x-ox;fo.mv=Math.abs(dx)>0.02;if(Math.abs(dx)>0.05)fo.f=dx>0?1:-1;if(fo.mv)fo.ph+=dt*9});
   // npcs walk (animals and villagers)
   for(const a of W.npcs){const ox=a.x;if(!a.calm){a.wt=(a.wt||0)-dt;if(a.wt<=0){a.wt=rnd(1,3);a.walk=Math.random()<0.7}if(a.walk){a.x+=a.f*a.sp*dt;if(a.x>a.x1){a.x=a.x1;a.f=-1}if(a.x<a.x0){a.x=a.x0;a.f=1}}}else a.f=H.x<a.x?-1:1;
@@ -972,5 +972,5 @@ if(window.__QA){
     if(A.tgtT>14&&tg.o&&typeof tg.o==='object'){H.x=tg.x;H.y=tg.y;H.vy=0;A.assists++;A.tgtT=0}}
 }
 
-window.__VERSION=29;
+window.__VERSION=33;
 </script></body></html>
