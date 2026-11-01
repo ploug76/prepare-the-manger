@@ -243,7 +243,7 @@ function drawNote(x,y,ph){const yy=y+Math.sin(t*4+ph)*2;glow(x,yy-4,13,'255,250,
 function star4(x,y,r,rot=0,col='#fffef2'){o.save();o.translate(x,y);o.rotate(rot);o.fillStyle=col;o.beginPath();for(let i=0;i<8;i++){const a=i*Math.PI/4,rr=i%2?r*0.28:r;o.lineTo(Math.sin(a)*rr,-Math.cos(a)*rr)}o.closePath();o.fill();o.restore()}
 function drawSpark(x,y,ph){const yy=y+Math.sin(t*5+ph)*1.5;glow(x,yy,13,'200,230,255',0.6);star4(x,yy,4.2+Math.sin(t*6+ph)*0.6,t*0.8+ph);star4(x,yy,2,t*0.8+ph+0.4,'#fff6c0')}
 function drawGift(k,x,y){if(k==='gold')spriteW('chest',x,y,7);else sprite(k==='frankincense'?'frank':'myrrh',x,y,7.5);if(k==='frankincense'){o.save();o.globalAlpha*=0.35;for(let i=0;i<3;i++){const p=((t*0.6+i/3)%1);o.fillStyle='#fff';o.beginPath();o.arc(x+Math.sin(t*2+i)*1.2,y-8-p*8,0.8+p*1.2,0,TAU);o.fill()}o.restore()}}
-function drawThorn(x,y){spriteW('thorn',x,y+0.8,15)}
+function drawThorn(x,y){glow(x,y-3,12,'210,255,160',W.theme==='day'?0.12:0.3);spriteW('thorn',x,y+0.8,20)}   // green leafy bramble with a pale rim so it reads on any ground (Peter Nov 1)
 function drawBaby(x,y){glow(x,y-3,24,'255,240,170',0.6)}
 function drawManger(x,y,straw,baby,w=18){if(baby){glow(x,y-6,26,'255,240,170',0.55);spriteW('manger_baby',x,y,w);return}
   const m=META.manger,im=im_('manger');if(!m||!im)return;const h=w*m.h/m.w;
@@ -447,13 +447,16 @@ function drawGround(cx,cy){const y=GY-cy;if(y>VH+4)return;if(W.type==='climb'){c
   for(let i=0;i<W.segs.length-1;i++){const a=W.segs[i][1],b=W.segs[i+1][0],x0=a-cx,x1=b-cx;if(x1<0||x0>VW)continue;const water=th==='field'||th==='day'||th==='dusk';
     const wy=y+(water?4.5:9),ww=x1-x0;
     if(water){const dusk=th==='dusk',night=th==='field',tex=IMG.bg_g_water,dh=VH-wy+4;
-      o.save();o.beginPath();o.rect(x0,wy,ww,dh);o.clip();
-      if(tex){const tw=dh*tex.width/tex.height,sx=x0-((a*0.37)%Math.max(1,tw-ww));o.drawImage(tex,sx,wy,tw,dh)}else{o.fillStyle='#2a5a8a';o.fillRect(x0,wy,ww,dh)}
+      // texture size comes from the camera's REST height (like the ground tiles), not the live camera: sizing it from VH-wy made the
+      // painting rescale and its slice offset wrap every frame while the camera rose/fell during a jump -> erratic water
+      const th0=(LY.land?31:40)+12;
+      o.save();o.beginPath();o.rect(x0,wy,ww,dh);o.clip();o.fillStyle=dusk?'#3a4a6a':night?'#14284a':'#2a5a8a';o.fillRect(x0,wy,ww,dh);
+      if(tex){const tw=th0*tex.width/tex.height,off=tw>ww?(a*0.37)%(tw-ww):0;for(let sx=x0-off;sx<x1;sx+=tw)o.drawImage(tex,sx,wy,tw+0.5,th0)}
       if(dusk){o.fillStyle='rgba(120,60,90,.28)';o.fillRect(x0,wy,ww,dh)}if(night){o.fillStyle='rgba(10,20,60,.45)';o.fillRect(x0,wy,ww,dh)}
       // painted surface: moving light glints on the waterline, a soft reflection band
       const sg=o.createLinearGradient(0,wy,0,wy+5);sg.addColorStop(0,dusk?'rgba(255,190,150,.55)':'rgba(220,240,255,.5)');sg.addColorStop(1,'rgba(255,255,255,0)');o.fillStyle=sg;o.fillRect(x0,wy,ww,5);
       o.globalCompositeOperation='lighter';
-      for(let k=0;k<5;k++){const yy=wy+1.2+k*1.6,ph=t*(0.9+k*.25)+k*1.9;o.strokeStyle=dusk?'rgba(255,200,160,.30)':'rgba(200,230,255,.28)';o.lineWidth=.4;o.beginPath();for(let xx=x0;xx<=x1;xx+=1.5){const v=Math.sin(xx*.42+ph)*.35;xx===x0?o.moveTo(xx,yy+v):o.lineTo(xx,yy+v)}o.globalAlpha=1-k*.17;o.stroke()}
+      for(let k=0;k<5;k++){const yy=wy+1.2+k*1.6,ph=t*(0.9+k*.25)+k*1.9;o.strokeStyle=dusk?'rgba(255,200,160,.30)':'rgba(200,230,255,.28)';o.lineWidth=.4;o.beginPath();for(let xx=x0;xx<=x1+1.5;xx+=1.5){const v=Math.sin((xx+cx)*.42+ph)*.35;xx===x0?o.moveTo(xx,yy+v):o.lineTo(xx,yy+v)}o.globalAlpha=1-k*.17;o.stroke()}
       o.globalAlpha=1;o.globalCompositeOperation='source-over';
       const sh=o.createLinearGradient(x0,0,x1,0);sh.addColorStop(0,'rgba(0,0,0,.5)');sh.addColorStop(.14,'rgba(0,0,0,0)');sh.addColorStop(.86,'rgba(0,0,0,0)');sh.addColorStop(1,'rgba(0,0,0,.5)');o.fillStyle=sh;o.fillRect(x0,wy,ww,dh);o.restore()}
     else{const gr=o.createLinearGradient(0,wy,0,VH);gr.addColorStop(0,'#1a1426');gr.addColorStop(.25,'#07050e');gr.addColorStop(1,'#000');o.fillStyle=gr;o.fillRect(x0,wy,ww,VH);
@@ -972,5 +975,5 @@ if(window.__QA){
     if(A.tgtT>14&&tg.o&&typeof tg.o==='object'){H.x=tg.x;H.y=tg.y;H.vy=0;A.assists++;A.tgtT=0}}
 }
 
-window.__VERSION=35;
+window.__VERSION=37;
 </script></body></html>
