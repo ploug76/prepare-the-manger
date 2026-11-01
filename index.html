@@ -32,15 +32,15 @@ function layout(){
   if(!land){
     const ph=clamp(Math.round(CH*0.26),170,260);y.ctrl={x:0,y:CH-ph,w:CW,h:ph};
     const big=clamp(Math.max(ph*0.36,CW*0.26),92,124),sm=Math.round(big*0.84),bot=clamp(ph*0.14,18,46)+SAFE.b;
-    y.J={cx:CW-SAFE.r-16-big/2,cy:CH-bot-big/2,r:big/2};
-    let oy=CH-bot-big*0.42-sm/2;if(oy-sm/2<CH-ph+8)oy=CH-ph+8+sm/2;
-    y.A={cx:CW-SAFE.r-16-big-14-sm/2,cy:oy,r:sm/2};
+    // Peter Oct 31 9:10 PM: NES pad - ACTION (green) left, JUMP (orange) right, level, both the old ACTION size
+    y.J={cx:CW-SAFE.r-16-sm/2,cy:CH-bot-sm/2,r:sm/2};
+    y.A={cx:CW-SAFE.r-16-sm-18-sm/2,cy:CH-bot-sm/2,r:sm/2};
     fx=L;fy=T+topH;fw=R-L;fh=CH-ph-fy;
     S=Math.max(2,Math.min(fw/104,fh/118));   // Vol 2 scale: hero ~ a quarter of the view width
   }else{
     const big=clamp(CH*0.21,72,96),sm=Math.round(big*0.82);y.ctrl=null;
-    y.J={cx:CW-SAFE.r-14-big/2,cy:CH-12-SAFE.b-big/2,r:big/2};
-    y.A={cx:CW-SAFE.r-14-big-10-sm/2,cy:CH-12-SAFE.b-big*0.18-sm/2,r:sm/2};
+    y.J={cx:CW-SAFE.r-14-sm/2,cy:CH-12-SAFE.b-sm/2,r:sm/2};
+    y.A={cx:CW-SAFE.r-14-sm-16-sm/2,cy:CH-12-SAFE.b-sm/2,r:sm/2};
     fx=L;fy=T+topH;fw=R-L;fh=B-fy;
     S=Math.max(2,Math.min(fw/230,CH*0.205/26,fh/96));   // Vol 2 scale: hero ~20% of screen height
   }
@@ -972,5 +972,5 @@ if(window.__QA){
     if(A.tgtT>14&&tg.o&&typeof tg.o==='object'){H.x=tg.x;H.y=tg.y;H.vy=0;A.assists++;A.tgtT=0}}
 }
 
-window.__VERSION=34;
+window.__VERSION=35;
 </script></body></html>
