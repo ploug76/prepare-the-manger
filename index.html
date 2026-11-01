@@ -437,7 +437,7 @@ function drawBGTown(cx,cy,night){const th=W.theme;if(th==='day')return;const bas
   const gr=o.createLinearGradient(0,base-40,0,base);gr.addColorStop(0,'rgba(20,24,60,0)');gr.addColorStop(1,th==='dusk'?'rgba(80,50,80,.35)':'rgba(20,24,60,.4)');o.fillStyle=gr;o.fillRect(0,base-40,VW,40)}
 function groundCols(){const th=W.theme;return th==='day'?['#7fb34f','#a07a4a','#7a5a36']:th==='dusk'?['#8a7a4a','#8a6a4a','#5a4430']:th==='field'?['#3f6a3a','#4a3a2a','#33281c']:th==='sky'?['#e8e4f8','#c8c0e8','#a8a0d0']:['#5a5a4a','#4a3e30','#33281c']}
 function drawGround(cx,cy){const y=GY-cy;if(y>VH+4)return;if(W.type==='climb'){const m=META.p_cloud;o.fillStyle='rgba(240,236,255,.95)';o.fillRect(-2,y+6,VW+4,VH-y+4);if(m)for(let x=-30;x<VW+30;x+=34)o.drawImage(IMG.p_cloud,x+Math.sin(t*0.5+x)*2,y-6,60,17);return}const gn=GROUND[level],im=IMG['bg_'+gn],th=W.theme,night=th==='night'||th==='field';
-  const gh=Math.max(30,(VH-y)*1.08+6),gw=im?gh*im.width/im.height:0,top=y-gh*0.1;
+  const gh=Math.max(30,(LY.land?31:40)*1.08+6),gw=im?gh*im.width/im.height:0,top=y-gh*0.1;
   for(const [a,b] of W.segs){const x0=Math.max(-2,a-cx),x1=Math.min(VW+2,b-cx);if(x1<=x0)continue;
     o.fillStyle='#24180f';o.fillRect(x0,y+gh*0.6,x1-x0,VH-y+10);
     if(im){o.save();o.beginPath();o.rect(x0,top-4,x1-x0,VH-top+10);o.clip();let sx=-((cx%gw)+gw)%gw;for(;sx<VW;sx+=gw)o.drawImage(im,sx-0.3,top,gw+0.6,gh);o.restore()}
@@ -972,5 +972,5 @@ if(window.__QA){
     if(A.tgtT>14&&tg.o&&typeof tg.o==='object'){H.x=tg.x;H.y=tg.y;H.vy=0;A.assists++;A.tgtT=0}}
 }
 
-window.__VERSION=33;
+window.__VERSION=34;
 </script></body></html>
