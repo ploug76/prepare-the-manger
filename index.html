@@ -287,20 +287,20 @@ const LEVELS=[
   outro:[{who:'angel',text:'The angel Gabriel came to Mary in Nazareth with good news: she would have a son, and his name would be JESUS.',ref:'Luke 1:26-31'},
          {who:'mary',text:'"Behold the handmaid of the Lord; be it unto me according to thy word."',ref:'Luke 1:38 (KJV)'}],
   piece:'mary',why:'Mary trusted God\'s word. God always keeps his promises.'},
- {n:2,name:"Joseph's Dream",ref:'Matthew 1:20-23 (KJV)',theme:'day',hero:'joseph',song:1,len:2700,
+ {n:2,name:"Joseph's Dream",ref:'Matthew 1:23 (KJV)',theme:'day',hero:'joseph',song:1,len:2700,
   verse:'Behold, a virgin shall be with child, and shall bring forth a son, and they shall call his name Emmanuel, which being interpreted is, God with us.',
   pre:[{who:'dream',text:'While Joseph slept, the angel of the Lord appeared to him in a dream: "Joseph, thou son of David, fear not to take unto thee Mary thy wife."',ref:'Matthew 1:20 (KJV)'}],
   how:'Joseph woke up and obeyed. Gather 6 wooden planks and his 6 carpentry tools, then press ACTION to get the house ready.',
   obj:[{id:'plank',label:'Planks',n:6},{id:'tool',label:'Tools found',n:6},{id:'ready',label:'House ready',n:3}],goalLabel:'the house',
   outro:[{who:'joseph',text:'Joseph did as the angel of the Lord told him, and took Mary as his wife.',ref:'Matthew 1:24'}],
   piece:'joseph',why:'Jesus is Emmanuel. God came to be with us.'},
- {n:3,name:'No Room',ref:'Luke 2:1-7 (KJV)',theme:'night',hero:'joseph',song:2,len:2900,
+ {n:3,name:'No Room',ref:'Luke 2:7 (KJV)',theme:'night',hero:'joseph',song:2,len:2900,
   verse:'And she brought forth her firstborn son, and wrapped him in swaddling clothes, and laid him in a manger; because there was no room for them in the inn.',
   how:'Bethlehem is full! Knock on the inn doors with ACTION. Pick up straw on the way, then fix up the stable: sweep, fill the manger and calm the animals.',
   obj:[{id:'inn',label:'Inns asked',n:3},{id:'straw',label:'Straw',n:9},{id:'sweep',label:'Swept',n:4},{id:'calm',label:'Animals calm',n:2},{id:'manger',label:'Manger filled',n:1}],goalLabel:null,
   outro:[{who:'stable',text:'There was no room in the inn, so Mary laid her baby in a manger. The King of heaven was born in a humble stable.',ref:'Luke 2:7'}],
   piece:'stable',why:'The King of all came humbly, to a manger, for everyone.'},
- {n:4,name:"Shepherds' Field",ref:'Luke 2:8-12 (KJV)',theme:'field',hero:'shepherd',song:0,len:2900,
+ {n:4,name:"Shepherds' Field",ref:'Luke 2:8 (KJV)',theme:'field',hero:'shepherd',song:0,len:2900,
   verse:'And there were in the same country shepherds abiding in the field, keeping watch over their flock by night.',
   how:'Eight sheep wandered off! Walk close to each one and it will follow you. Bring all 8 back to the fold on the left.',
   obj:[{id:'fold',label:'Sheep home',n:8}],goalLabel:null,
@@ -313,14 +313,14 @@ const LEVELS=[
   obj:[{id:'note',label:'Notes of light',n:16}],goalLabel:'the choir',
   outro:[{who:'choir',text:'"Glory to God in the highest, and on earth peace, good will toward men."',ref:'Luke 2:14 (KJV)'}],
   piece:'angels',why:'Heaven celebrates, because the Saviour has come.'},
- {n:6,name:'Go and See',ref:'Luke 2:15-20 (KJV)',theme:'night',hero:'shepherd',song:2,len:2900,
+ {n:6,name:'Go and See',ref:'Luke 2:15-16 (KJV)',theme:'night',hero:'shepherd',song:2,len:2900,
   verse:'Let us now go even unto Bethlehem, and see this thing which is come to pass, which the Lord hath made known unto us. And they came with haste.',
   how:'Hurry to Bethlehem! Press ACTION to light the 10 street lanterns on the way, then find the stable.',
   obj:[{id:'lantern',label:'Lanterns lit',n:10}],goalLabel:'the stable',
   outro:[{who:'scene',text:'They came with haste, and found Mary, and Joseph, and the babe lying in a manger.',ref:'Luke 2:16 (KJV)'},
-         {who:'shepherds',text:'"And the shepherds returned, glorifying and praising God for all the things that they had heard and seen."',ref:'Luke 2:20 (KJV)'}],
+         {who:'shepherds',text:'"And the shepherds returned, glorifying and praising God for all the things that they had heard and seen, as it was told unto them."',ref:'Luke 2:20 (KJV)'}],
   piece:'shepherds',why:'Good news is for sharing. The shepherds told everyone.'},
- {n:7,name:'The Star',ref:'Matthew 2:1-11 (KJV)',theme:'night',hero:'wise',song:0,len:1900,
+ {n:7,name:'The Star',ref:'Matthew 2:10 (KJV)',theme:'night',hero:'wise',song:0,len:1900,
   verse:'When they saw the star, they rejoiced with exceeding great joy.',
   how:'The Wise Men have come to Bethlehem. Gather the starlight on the rooftops until the star stops over the HOUSE. Then present your 3 gifts at the door.',
   obj:[{id:'spark',label:'Starlight',n:14},{id:'gift',label:'Gifts given',n:3}],goalLabel:'the house',
@@ -363,11 +363,11 @@ function build(n){const L=LEVELS[n-1],w=newWorld(L),r=mulberry(n*7919+11);
     [[485,'"Sorry, no room here!"'],[1085,'"We are full. No room!"'],[1670,'"No room in the inn... but you may use my stable."']].forEach(([x,say],i)=>spot(w,'inn',x,GY,{obj:'inn',seq:i,say}));
     [[880,GY-24],[1270,GY-26],[1660,GY-30],[1845,GY-28],[2120,GY]].forEach(([x,y])=>item(w,'straw',x,y,{obj:'straw'}));
     [2330,2390,2520,2580].forEach(x=>spot(w,'sweep',x,GY,{obj:'sweep',need:['inn']}));spot(w,'manger',2456,GY,{obj:'manger',need:['inn','straw','sweep']});
-    w.npcs.push({k:'ox',x:2360,y:GY,f:1,ph:0,x0:2300,x1:2440,sp:10,calm:false,obj:'calm'},{k:'goat',x:2560,y:GY,f:-1,ph:0,x0:2480,x1:2620,sp:12,calm:false,obj:'calm'});
+    w.npcs.push({k:'ox',x:2360,y:GY,f:1,ph:0,x0:2300,x1:2418,sp:10,calm:false,obj:'calm'},{k:'goat',x:2560,y:GY,f:-1,ph:0,x0:2480,x1:2620,sp:12,calm:false,obj:'calm'});
     w.stable={x:2460};[900,1530].forEach(x=>w.thorns.push({x}));w.followers.push({k:'donkeyMary',x:20,y:GY,f:1,ph:0,until:2250});bgTown(w,r,0,1);w.goal={x:-1}}
   if(n===4){[[520,30],[1130,34],[1720,30],[2330,32]].forEach(a=>gap(w,...a));
     [[360,22,40],[860,26,50],[945,48,36],[1450,24,46],[1530,44,40],[1980,26,44],[2060,50,40],[2580,28,50]].forEach(([x,h,wd])=>plat(w,x,GY-h,wd,'rock'));
-    w.fold={x0:12,x1:92};w.start={x:116,y:GY};
+    w.fold={x0:12,x1:140};w.start={x:164,y:GY};
     [[380,GY-22],[700,GY],[960,GY-48],[1300,GY],[1550,GY-44],[1880,GY],[2080,GY-50],[2700,GY]].forEach(([x,y],i)=>w.sheep.push({x,y,f:i%2?1:-1,ph:0,name:SHEEP_NAMES[i],st:'lost',x0:x,mv:false,bub:0,i}));
     [640,1250,1820,2460].forEach(x=>w.thorns.push({x}));w.goal={x:-1}}
   if(n===5){w.len=200;w.segs=[[0,200]];const top=GY-2300;let x=90,y=GY;for(let i=0;y>top+60;i++){y-=28+(i%3)*3;const wd=34+r()*16|0;x=clamp(x+(r()<0.5?-1:1)*(28+r()*28),8,192-wd);const p=plat(w,x,y,wd,'cloud');if(i%5===3){p.mv=1;p.x0=x;p.amp=18;p.ph=r()*6}
@@ -389,7 +389,7 @@ function build(n){const L=LEVELS[n-1],w=newWorld(L),r=mulberry(n*7919+11);
     [[300,26,40],[700,30,44],[785,52,36],[1150,26,40],[1225,46,36]].forEach(([x,h,wd])=>plat(w,x,GY-h,wd,'rock'));house(w,1700,60,30);house(w,1840,80,34);
     [[200,GY],[320,GY-26],[620,GY],[800,GY-52],[1170,GY-26],[1240,GY-46],[1660,GY],[1730,GY-30]].forEach(([x,y])=>spot(w,'candle',x,y,{obj:'candle'}));
     spot(w,'see',1460,GY,{obj:'see',need:['candle']});w.stable={x:1460};[440,900].forEach(x=>w.thorns.push({x}));
-    w.npcs.push({k:'ox',x:1430,y:GY,f:1,ph:0,x0:1420,x1:1436,sp:3},{k:'donkey',x:1495,y:GY,f:-1,ph:0,x0:1486,x1:1500,sp:3});w.goal={x:-1};bgTown(w,r,0,1)}
+    w.npcs.push({k:'ox',x:1412,y:GY,f:1,ph:0,x0:1406,x1:1416,sp:3},{k:'donkey',x:1506,y:GY,f:-1,ph:0,x0:1502,x1:1510,sp:3});/* beside Mary and Joseph, not in front of them */w.goal={x:-1};bgTown(w,r,0,1)}
   const EXT={1:[1700,'spot','lamp',5],2:[1700,'item','plank',6],3:[1500,'item','straw',4],4:[900,null,null,0],6:[1500,'spot','lantern',4],7:[2200,'item','spark',5],8:[2300,'spot','candle',4]}[n];
   if(EXT)extendLevel(w,r,L,...EXT);
   return w}
@@ -476,11 +476,13 @@ const PIECE_ORDER=['stable','mary','joseph','sheep','angels','shepherds','star',
 let SCENE=LS.get('scene',{pieces:{},sheep:[],decos:[]});
 function saveScene(){LS.set('scene',SCENE)}
 function drawPiece(id,x,y,o2={}){const ph=o2.ph||0,mv=!!o2.mv;
-  if(id==='stable'){drawStable(x,y+1,{w:118,lit:1});drawOx(x-34,y-1,1,ph,mv,{h:21});drawDonkey(x+36,y-1,-1,ph+1,mv,{h:22});if(!SCENE.pieces.baby||o2.noBaby)drawManger(x+1,y,true,false,20)}
+  if(id==='stable'){drawStable(x,y+1,{w:118,lit:1});drawOx(x-34,y-1,1,ph,mv,{h:21});drawDonkey(x+36,y-1,-1,ph+1,mv,{h:22});if(!o2.hasBaby)drawManger(x+1,y,true,false,20)}   // one manger only: the stable's empty manger is hidden once Baby Jesus (in his own manger) is in the scene
   else if(id==='mary')drawChar(x,y,x<120?1:-1,0,LOOKS.mary,{h:30});else if(id==='joseph')drawChar(x,y,x<120?1:-1,0,LOOKS.joseph,{h:32});
   else if(id==='baby')drawManger(x,y,true,true,21);
-  else if(id==='sheep'){const n=Math.max(1,(SCENE.sheep||[]).length||8);for(let i=0;i<n;i++)drawSheep(x-15+(i%4)*10+(i>3?5:0),y-(i>3?5:0),i%2?1:-1,ph+i,mv,{h:12})}
-  else if(id==='angels'){for(let i=0;i<3;i++)drawChar(x-15+i*15,y+Math.sin(t*2+i)*2-(i===1?7:0),x<120?1:-1,0,LOOKS.angel,{wph:i*1.7,fly:1,h:24})}
+  else if(id==='sheep'){const n=Math.max(1,(SCENE.sheep||[]).length||8);   // a small flock, spaced so no sheep stands on another: front row on the ground line, back row smaller + a little higher (further away), drawn first
+    const F=[[-21,5,1],[-4,6,-1],[13,5,1],[30,6,-1]],B=[[-13,-1,-1],[22,-1,1],[5,-2,1],[-30,-1,-1]],L=[];for(let i=0;i<n;i++){const q=i<4?F[i]:B[i-4];L.push([x+q[0],y+q[1],q[2],i<4?12:9.5,i])}
+    L.sort((a,b)=>a[1]-b[1]);for(const q of L)drawSheep(q[0],q[1],q[2],ph+q[4],mv,{h:q[3]})}
+  else if(id==='angels'){for(let i=0;i<3;i++)drawChar(x-24+i*24,y+Math.sin(t*2+i)*2-(i===1?9:0),x<120?1:-1,0,LOOKS.angel,{wph:i*1.7,fly:1,h:24})}   // spaced so the three angels don't overlap
   else if(id==='shepherds'){drawChar(x,y,x<120?1:-1,0,LOOKS.shepherd,{h:31});drawChar(x+13,y,x<120?1:-1,0,LOOKS.boy,{h:23});drawSheep(x-12,y,x<120?1:-1,ph,mv,{lamb:1,h:11})}
   else if(id==='star')drawStar(x,y,2.2)}
 function sceneBG(w,h){if(!paint('stable_night',0,0,w,h,0.45)){const gr=o.createLinearGradient(0,0,0,h);gr.addColorStop(0,'#070a26');gr.addColorStop(1,'#3a3468');o.fillStyle=gr;o.fillRect(0,0,w,h)}
@@ -489,7 +491,7 @@ function sceneBG(w,h){if(!paint('stable_night',0,0,w,h,0.45)){const gr=o.createL
 const SCS=4;
 function drawNativity(ctx,o2={}){withCtx(ctx,()=>{ctx.setTransform(SCS,0,0,SCS,0,0);ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';sceneBG(240,150);const P=o2.pieces||SCENE.pieces,only=o2.upto;
   const ids=Object.keys(P).filter(k=>PIECES[k]&&(!only||only.includes(k)));ids.sort((a,b)=>(a==='stable'?-1:b==='stable'?1:a==='star'?-1:b==='star'?1:P[a].y-P[b].y));
-  TINT={c:'#202a6a',a:0.16};for(const id of ids){if(o2.skip===id)continue;drawPiece(id,P[id].x,P[id].y,{ph:o2.ph,mv:o2.mv})}
+  const hasBaby=ids.includes('baby')||o2.skip==='baby';TINT={c:'#202a6a',a:0.16};for(const id of ids){if(o2.skip===id)continue;drawPiece(id,P[id].x,P[id].y,{ph:o2.ph,mv:o2.mv,hasBaby})}
   const ds=SCENE.decos||[];for(const d of ds){if(o2.decoUpto!==undefined&&d>=o2.decoUpto)continue;const x=8+d*(224/25),y=d%2?146:149;drawDeco(DECOS[d%DECOS.length],x,y)}
   if(o2.extra)o2.extra();TINT=null;
   const vg=ctx.createRadialGradient(120,80,60,120,80,160);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,10,.45)');ctx.fillStyle=vg;ctx.fillRect(0,0,240,150)})}
@@ -517,7 +519,7 @@ function overSeg(x){return W.segs.some(s=>x>=s[0]-1&&x<=s[1]+1)}
 function gapAt(x){for(let i=0;i<W.segs.length-1;i++){const a=W.segs[i][1],b=W.segs[i+1][0];if(x>a-1&&x<b+1)return [a,b]}return null}
 function hurt(fx){if(H.inv>0||(window.__QA&&__QA.god))return;hearts--;H.inv=1.8;shake=4;SFX.hurt();float(H.x,H.y-30,'-1 ♥','#ff8aa0');H.kx=(H.x<fx?-1:1)*120;H.vy=-150;H.onG=false;if(hearts<=0)outOfHearts()}
 function fallReset(){if(H.inv<=0&&!(window.__QA&&__QA.god)&&W.type!=='climb'){hearts--;float(H.safe.x,H.safe.y-30,'-1 ♥','#ff8aa0')}   // no heart lost while blinking
-  H.x=H.safe.x;H.y=H.safe.y;H.vx=H.vy=H.kx=0;H.onG=true;H.inv=2;SFX.hurt();camFollow(true);ST.falls=(ST.falls||0)+1;if(hearts<=0)outOfHearts()}
+  H.x=H.safe.x;H.y=H.safe.y;H.vx=H.vy=H.kx=0;H.onG=true;H.inv=2;SFX.hurt();camFollow(true);resetTrail();ST.falls=(ST.falls||0)+1;if(hearts<=0)outOfHearts()}
 function outOfHearts(){state='retry'}
 function objToast(id){const L=Lv(),n=L.level;if(!objDone(id))return;const msgs={lamp:"All lamps lit! Go to Mary's door ▶",tool:'All tools found!',plank:'All planks gathered!',ready:'The house is ready! Go in ▶',inn:'The innkeeper offers his stable ▶',straw:'Straw gathered! Fill the manger.',
    sweep:'The stable is swept!',calm:'The animals are calm.',note:'The choir is waiting at the top! ▲',lantern:'Lanterns lit! Find the stable ▶',spark:'The star stopped over the house! ▶',gift:'Gifts given! Go in to the house ▶',candle:'Bethlehem is glowing! Go to the manger ▶'};
@@ -544,6 +546,13 @@ function findNear(){let best=null,bd=1e9;
   for(const s of W.spots){if(s.done)continue;const dx=Math.abs(s.x-H.x),dy=Math.abs(s.y-H.y);if(dx<18&&dy<26&&dx<bd){bd=dx;best=s}}
   for(const a of W.npcs){if(!a.obj||a.calm)continue;const dx=Math.abs(a.x-H.x);if(dx<22&&Math.abs(a.y-H.y)<20&&dx<bd){bd=dx;best={npc:a,x:a.x,y:a.y}}}
   return best}
+// companions (Mary's donkey, magi, camels, sheep) walk on the street: on solid ground they stand at GY, over a gap they leap in a smooth arc.
+// They never climb onto roofs/ledges and never float (Peter Nov 1: check the animation logic).
+function groundY(x){if(!W||W.type==='climb'||overSeg(x))return GY;const g=gapAt(x);if(!g)return GY;const [a,b]=g,u=clamp((x-a)/Math.max(1,b-a),0,1);return GY-Math.sin(Math.PI*u)*Math.max(14,(b-a)*0.7)}
+function resetTrail(){trail=[];for(let i=600;i>=0;i--)trail.push({x:H.x-i,y:GY});W.followers.forEach((fo,i)=>{if(fo.parked)return;const p=trailAt(followGap(i));fo.x=p.x;fo.y=groundY(fo.x)});
+  if(W.sheep)W.sheep.filter(q=>q.st==='follow').sort((a,b)=>a.fo-b.fo).forEach((q,k)=>{const p=trailAt((k+1)*17);q.x=p.x;q.y=groundY(q.x)})}
+function foldX(i){return W.fold.x0+9+i*16}   // 8 spots, one sheep-width apart
+function followGap(i){return W.followers.slice(0,i+1).reduce((a,q)=>a+(q.k==='magus'?17:q.k==='camel'?30:24)*(q.k==='donkeyMary'?1:clamp(VW/280,0.52,1)),0)}
 function trailAt(back){const i=Math.max(0,trail.length-1-Math.round(back));return trail[i]}
 // ---------- main update
 function update(dt){t+=dt;if(toastT>0)toastT-=dt;if(shake>0)shake=Math.max(0,shake-dt*20);updParts(dt);
@@ -573,8 +582,8 @@ function update(dt){t+=dt;if(toastT>0)toastT-=dt;if(shake>0)shake=Math.max(0,sha
   // thorns
   for(const th of W.thorns)if(Math.abs(H.x-th.x)<7&&H.y>GY-9&&H.y<=GY+2)hurt(th.x);
   if(state!=='play')return;
-  // trail for followers
-  const lt=trail[trail.length-1],d=Math.hypot(H.x-lt.x,H.y-lt.y);if(d>48){const dx=H.x-lt.x,dy=H.y-lt.y;trail=trail.map(q=>({x:q.x+dx,y:Math.min(GY,q.y+dy)}));W.followers.forEach(fo=>{if(!fo.parked){fo.x+=dx;fo.y=Math.min(GY,fo.y+dy)}})}else if(d>=1){const n=Math.floor(d);for(let i=1;i<=n;i++)trail.push({x:lerp(lt.x,H.x,i/n),y:lerp(lt.y,H.y,i/n)});if(trail.length>900)trail.splice(0,trail.length-900)}
+  // trail for followers (horizontal distance only, so jumping in place doesn't pull companions onto the hero)
+  const lt=trail[trail.length-1],d=Math.abs(H.x-lt.x);if(d>48){resetTrail()}else if(d>=1){const n=Math.floor(d);for(let i=1;i<=n;i++)trail.push({x:lerp(lt.x,H.x,i/n),y:GY});if(trail.length>900)trail.splice(0,trail.length-900)}
   // items
   for(const k of W.items){if(k.got)continue;if(Math.abs(k.x-H.x)<10&&Math.abs(k.y-(H.y-8))<16){k.got=true;ST[k.obj]=(ST[k.obj]||0)+1;SFX.pick();part(k.x,k.y-4,12,['#ffe08a','#fff'],{sp:30,add:true});
     if(level===2)readyHint();float(k.x,k.y-16,k.k==='tool'?k.tool[0].toUpperCase()+k.tool.slice(1)+'!':k.k==='straw'?'Straw!':k.k==='plank'?'Plank!':k.k==='note'?'♪':'✦');objToast(k.obj)}}
@@ -584,12 +593,12 @@ function update(dt){t+=dt;if(toastT>0)toastT-=dt;if(shake>0)shake=Math.max(0,sha
     for(const s of W.sheep){s.ph+=dt*10;const ox=s.x;
       if(s.st==='lost'){s.wt=(s.wt||0)-dt;if(s.wt<=0){s.wt=rnd(1.5,3.5);s.walk=Math.random()<0.55;if(s.walk)s.f=s.x>s.x0+14?-1:s.x<s.x0-14?1:pick([1,-1])}if(s.walk)s.x+=s.f*7*dt;
         if(Math.abs(H.x-s.x)<20&&Math.abs(H.y-s.y)<16){s.st='follow';s.fo=performance.now()+Math.random();SFX.bleat();float(s.x,s.y-20,s.name+' follows you!','#ffffff');bubble(s,'Baa!',1.2)}}
-      else if(s.st==='follow'){const k=fol.indexOf(s);if(home){const tx=W.fold.x0+10+((ST.fold+k)%8)*8;s.x=lerp(s.x,tx,Math.min(1,dt*2.5));s.y=lerp(s.y,GY,Math.min(1,dt*6));if(s.x<W.fold.x1-4){s.st='home';ST.fold++;SFX.bleat();float(s.x,s.y-20,s.name+' is home!','#bdf3ff');objToast('fold')}}
-        else{const p=trailAt((k+1)*15);s.x=lerp(s.x,p.x,Math.min(1,dt*7));s.y=lerp(s.y,p.y,Math.min(1,dt*9))}}
-      else{s.wt=(s.wt||0)-dt;if(s.wt<=0){s.wt=rnd(1.5,4);s.walk=Math.random()<0.5;s.f=pick([1,-1])}if(s.walk){s.x+=s.f*5*dt;if(s.x<W.fold.x0+5){s.x=W.fold.x0+5;s.f=1}if(s.x>W.fold.x1-6){s.x=W.fold.x1-6;s.f=-1}}s.y=GY}
-      const dx=s.x-ox;s.mv=Math.abs(dx)>0.02;if(Math.abs(dx)>0.05)s.f=dx>0?1:-1}}
+      else if(s.st==='follow'){const k=fol.indexOf(s);if(home){const tx=foldX(Math.min(7,ST.fold+k));s.x=lerp(s.x,tx,Math.min(1,dt*2.5));s.y=groundY(s.x);if(s.x<W.fold.x1-4){s.st='home';const used=W.sheep.filter(q=>q.st==='home'&&q!==s).map(q=>q.slot);let bs=0,bd=1e9;for(let j2=0;j2<8;j2++)if(!used.includes(j2)&&Math.abs(foldX(j2)-s.x)<bd){bd=Math.abs(foldX(j2)-s.x);bs=j2}s.slot=bs;ST.fold++;SFX.bleat();float(s.x,s.y-20,s.name+' is home!','#bdf3ff');objToast('fold')}}
+        else{const p=trailAt((k+1)*17);s.x=lerp(s.x,p.x,Math.min(1,dt*7));s.y=groundY(s.x)}}
+      else{s.x=lerp(s.x,foldX(s.slot||0),Math.min(1,dt*2.5));s.y=GY;s.wt=(s.wt||0)-dt;if(s.wt<=0){s.wt=rnd(2,5);s.face=pick([1,-1])}}   // home: each sheep keeps its own spot in the fold and just turns now and then (no walking through each other)
+      const dx=s.x-ox;s.mv=Math.abs(dx)>0.02;if(Math.abs(dx)>0.05)s.f=dx>0?1:-1;else if(s.st==='home'&&s.face)s.f=s.face}}
   // followers (Mary on the donkey, the camels)
-  W.followers.forEach((fo,i)=>{const ox=fo.x;if(fo.until&&H.x>fo.until)fo.parked=true;if(!fo.parked){const p=trailAt(W.followers.slice(0,i+1).reduce((a,q)=>a+(q.k==='magus'?17:q.k==='camel'?30:24)*(q.k==='donkeyMary'?1:clamp(VW/280,0.52,1)),0));fo.x=lerp(fo.x,p.x,Math.min(1,dt*7));fo.y=lerp(fo.y,Math.min(GY,p.y),Math.min(1,dt*9))}
+  W.followers.forEach((fo,i)=>{const ox=fo.x;if(fo.until&&H.x>fo.until)fo.parked=true;if(!fo.parked){const p=trailAt(followGap(i));fo.x=lerp(fo.x,p.x,Math.min(1,dt*7));fo.y=groundY(fo.x)}
     const dx=fo.x-ox;fo.mv=Math.abs(dx)>0.02;if(Math.abs(dx)>0.05)fo.f=dx>0?1:-1;if(fo.mv)fo.ph+=dt*9});
   // npcs walk (animals and villagers)
   for(const a of W.npcs){const ox=a.x;if(!a.calm){a.wt=(a.wt||0)-dt;if(a.wt<=0){a.wt=rnd(1,3);a.walk=Math.random()<0.7}if(a.walk){a.x+=a.f*a.sp*dt;if(a.x>a.x1){a.x=a.x1;a.f=-1}if(a.x<a.x0){a.x=a.x0;a.f=1}}}else a.f=H.x<a.x?-1:1;
@@ -801,7 +810,7 @@ function sceneArea(top,bottomPad){const land=LY.land;const aw=CW-24-SAFE.l-SAFE.
 function drawDecorate(){const land=LY.land,id=DEC.id,P=PIECES[id];menuBG();
   const head=wrap('You earned '+P.name+'! Drag it anywhere in your nativity, then tap Place it.',Math.min(CW-30,700),18);head.forEach((l,i)=>txt(l,CW/2,SAFE.t+22+i*24,18,'#ffe14a'));
   const top=SAFE.t+22+head.length*24;const R=sceneArea(top,70);DEC.rect=R;
-  drawNativity(sceneCtx,{ph:t*3,skip:id,extra:()=>{glow(DEC.x,DEC.y-8,26+4*Math.sin(t*4),'255,250,200',0.5);drawPiece(id,DEC.x,DEC.y,{ph:t*3,mv:false})}});
+  drawNativity(sceneCtx,{ph:t*3,skip:id,extra:()=>{glow(DEC.x,DEC.y-8,26+4*Math.sin(t*4),'255,250,200',0.5);drawPiece(id,DEC.x,DEC.y,{ph:t*3,mv:false,hasBaby:!!SCENE.pieces.baby})}});
   blit(sceneCv,R.x,R.y,R.w,R.h);frame2(R);
   const bw=Math.min(300,CW-40);button('place',(CW-bw)/2,CH-SAFE.b-60,bw,52,'Place it ✓','#2f9f4f',()=>{SCENE.pieces[id]={x:Math.round(DEC.x),y:Math.round(DEC.y)};saveScene();SFX.place();state='why'},22);menuBtns[menuBtns.length-1].primary=1}
 function drawWhy(){const L=Lv(),land=LY.land;menuBG();drawNativity(sceneCtx,{ph:t*3});const R=sceneArea(SAFE.t+12,land?190:300);blit(sceneCv,R.x,R.y,R.w,R.h);frame2(R);
@@ -825,7 +834,7 @@ function drawReplay(){g.fillStyle='#000';g.fillRect(0,0,CW,CH);const ids=PIECE_O
   const upto=ids.filter((k,i)=>T>0.8+i*(6.4/n));const R=sceneArea(SAFE.t+12,80);
   drawNativity(sceneCtx,{ph:t*3,mv:true,upto,decoUpto:T>7.4?99:-1,extra:()=>{const i=upto.length-1;if(i>=0){const p=SCENE.pieces[ids[i]],k=T-(0.8+i*(6.4/n));if(k<0.8)glow(p.x,p.y-10,40*(1-k),'255,250,220',0.8)}}});
   const fade=clamp(T/0.8,0,1);g.globalAlpha=fade;blit(sceneCv,R.x,R.y,R.w,R.h);g.globalAlpha=1;
-  if(T>8.2){g.globalAlpha=clamp((T-8.2)/0.6,0,1);txt('My Nativity',CW/2,R.y+R.h*0.18,fitSize('My Nativity',R.w,40),'#ffe14a','center',{lw:6,st:'#3a2208'});txt('"Unto you is born this day... a Saviour" Luke 2:11',CW/2,R.y+R.h*0.18+40,fitSize('"Unto you is born this day... a Saviour" Luke 2:11',R.w-20,18),'#fff');g.globalAlpha=1}
+  if(T>8.2){g.globalAlpha=clamp((T-8.2)/0.6,0,1);txt('My Nativity',CW/2,R.y+R.h*0.18,fitSize('My Nativity',R.w,40),'#ffe14a','center',{lw:6,st:'#3a2208'});txt('"Unto you is born this day... a Saviour" Luke 2:11 (KJV)',CW/2,R.y+R.h*0.18+40,fitSize('"Unto you is born this day... a Saviour" Luke 2:11 (KJV)',R.w-20,18),'#fff');g.globalAlpha=1}
   g.fillStyle='#ffcf4a';g.fillRect(R.x,R.y+R.h+8,R.w*clamp(T/10,0,1),4);
   button('skipr',CW-SAFE.r-120,CH-SAFE.b-58,108,48,'Skip ⏭','#4a4a6a',()=>{state='scene'},18);if(T>=10)state='scene'}
 function adventDay(){const now=window.__QA&&__QA.date?new Date(__QA.date):new Date();let Y=now.getFullYear();if(now.getMonth()<6)Y--;for(let i=25;i>=0;i--){if(now>=new Date(Y,10,29+i))return i+1}return 0}
@@ -975,5 +984,5 @@ if(window.__QA){
     if(A.tgtT>14&&tg.o&&typeof tg.o==='object'){H.x=tg.x;H.y=tg.y;H.vy=0;A.assists++;A.tgtT=0}}
 }
 
-window.__VERSION=37;
+window.__VERSION=45;
 </script></body></html>
