@@ -147,14 +147,18 @@ const CHR={
   magus3:{b:'magus3_body',h:28*309/320,skin:'#9a6a48',sand:'#4a2a14',strap:'#2a160a'}};
 function limb(x1,y1,x2,y2,w,col,line,hl){o.lineCap='round';if(line){o.strokeStyle=line;o.lineWidth=w*1.3;o.beginPath();o.moveTo(x1,y1);o.lineTo(x2,y2);o.stroke()}o.strokeStyle=col;o.lineWidth=w;o.beginPath();o.moveTo(x1,y1);o.lineTo(x2,y2);o.stroke();
   if(hl){const dx=x2-x1,dy=y2-y1,L=Math.hypot(dx,dy)||1,nx=dy/L*w*0.22,ny=-dx/L*w*0.22;o.strokeStyle=hl;o.lineWidth=w*0.3;o.beginPath();o.moveTo(x1+nx,y1+ny);o.lineTo(x2+nx,y2+ny);o.stroke()}}
-// feet + shins under the robe (sprite px, facing +x). Toes always point forward.
-function personLegs(C,m,ph,amp,air){const Hh=m.h,cx=m.ax*m.w,cut=(m.cut||0.9)*Hh;
-  for(const i of [0,1]){const far=i===0,p=ph+(far?Math.PI:0),sn=Math.sin(p),cs=Math.cos(p);
-    let fx=cx+(far?-0.018:0.022)*Hh+0.11*Hh*amp*sn,fy=Hh-Math.max(0,cs)*0.05*Hh*amp,tilt=-amp*0.35*Math.max(0,cs)*Math.max(0,-sn+0.3);
+// Stride eases in and out (Vol 2 cadence). amp 0 is the painted stand; a number from easeAmp is a partial step.
+function gaitAmp(mv,o2){if(o2&&typeof o2.amp==='number')return clamp(o2.amp,0,1);return mv?1:0}
+function easeAmp(o,dt,moving){const tgt=moving?1:0;o.amp=(o.amp||0)+(tgt-(o.amp||0))*Math.min(1,dt*7);if(moving||o.amp>0.08)o.ph=(o.ph||0)+dt*(moving?11:7);return o.amp}
+// feet + shins (sprite px, facing +x). which 0 = far leg, 1 = near leg, omitted = both. Toes always point forward.
+function personLegs(C,m,ph,amp,air,which){const Hh=m.h,cx=m.ax*m.w,cut=(m.cut||0.9)*Hh;
+  for(const i of [0,1]){if(which!==undefined&&i!==which)continue;const far=i===0,p=ph+(far?Math.PI:0),sn=Math.sin(p),cs=Math.cos(p);
+    // far enough to clear the hem, short enough that the shin does not cut across the robe
+    let fx=cx+(far?-0.02:0.024)*Hh+0.145*Hh*amp*sn,fy=Hh-Math.max(0,cs)*0.07*Hh*amp,tilt=-amp*0.4*Math.max(0,cs)*Math.max(0,-sn+0.25);
     if(air){fx=cx+(far?-0.05:0.075)*Hh;fy=Hh-(far?0.035:0.06)*Hh;tilt=far?0.25:-0.15}
-    const hx=cx+(far?-0.02:0.02)*Hh,hy=C.legs?cut-0.1*Hh:cut-0.06*Hh,skin=far?shade(C.skin,0.72):C.skin,line=shade(C.skin,0.45);
-    if(C.legs){const kx=(hx+fx)/2+0.045*Hh*(air?1:Math.max(0.15,amp*Math.max(0,cs))),ky=(hy+fy)/2-0.01*Hh;limb(hx,hy,kx,ky,0.06*Hh,skin,line);limb(kx,ky,fx-0.01*Hh,fy-0.03*Hh,0.05*Hh,skin,line)}
-    else limb(hx,hy,fx-0.008*Hh,fy-0.028*Hh,0.042*Hh,skin,line);
+    const hx=cx+(far?-0.02:0.02)*Hh,hy=C.legs?cut-0.1*Hh:cut-0.04*Hh,skin=far?shade(C.skin,0.72):C.skin,line=shade(C.skin,0.45);
+    if(C.legs){const kx=(hx+fx)/2+0.05*Hh*(air?1:Math.max(0.15,amp*Math.max(0,cs))),ky=(hy+fy)/2-0.012*Hh;limb(hx,hy,kx,ky,0.062*Hh,skin,line);limb(kx,ky,fx-0.01*Hh,fy-0.03*Hh,0.052*Hh,skin,line)}
+    else limb(hx,hy,fx-0.01*Hh,fy-0.032*Hh,0.048*Hh,skin,line);
     o.save();o.translate(fx,fy);o.rotate(tilt);
     if(!C.bare){o.fillStyle=far?shade('#2a170a',0.8):'#2a170a';o.beginPath();o.ellipse(0.02*Hh,-0.009*Hh,0.058*Hh,0.012*Hh,0,0,TAU);o.fill();
       o.fillStyle=far?shade(C.sand,0.75):C.sand;o.beginPath();o.ellipse(0.02*Hh,-0.014*Hh,0.055*Hh,0.01*Hh,0,0,TAU);o.fill()}
@@ -162,15 +166,25 @@ function personLegs(C,m,ph,amp,air){const Hh=m.h,cx=m.ax*m.w,cut=(m.cut||0.9)*Hh
     o.beginPath();o.ellipse(0.054*Hh,-0.022*Hh,0.016*Hh,0.012*Hh,0,0,TAU);o.fill();   // toes, in front
     if(!C.bare){o.strokeStyle=far?shade(C.strap,0.8):C.strap;o.lineWidth=0.011*Hh;o.beginPath();o.moveTo(0.0,-0.042*Hh);o.lineTo(0.012*Hh,-0.012*Hh);o.moveTo(0.035*Hh,-0.04*Hh);o.lineTo(0.042*Hh,-0.012*Hh);o.stroke()}
     o.restore()}}
+// One painted flying pose, rocked around its centre every frame so the wings rise and fall (the old up/down swap popped).
+function drawAngelFly(x,y,f,HH,fr,tilt,bob){const m=META[fr],im=im_(fr);if(!m||!im)return false;const sc=HH/m.h;
+  o.save();o.translate(x,y-HH*0.48+bob);o.scale(f,1);o.rotate(tilt);o.scale(sc,sc);o.drawImage(im,-m.ax*m.w,-m.h*0.52);o.restore();return true}
 function drawPerson(x,y,f,ph,k,o2={}){const C=CHR[k];if(!C)return false;const m=META[C.b];if(!m||!IMG[C.b])return false;
-  const H=o2.h||C.h,sc=H/m.h,amp=o2.air?0:(o2.mv?1:0),tn=o2.tint;let saveT=TINT;if(tn&&!TINT)TINT={c:tn[0],a:tn[1]};
+  const H=o2.h||C.h,sc=H/m.h,amp=o2.air?0:gaitAmp(o2.mv,o2),tn=o2.tint;let saveT=TINT;if(tn&&!TINT)TINT={c:tn[0],a:tn[1]};
   if(o2.alpha!==undefined)o.globalAlpha=o2.alpha;
-  if(C.fly&&(o2.air||o2.fly)){const fr=C.fly[(Math.sin(t*(o2.flut?18:7)+(o2.wph||0))>0)?0:1],fm=META[fr];
-    if(fm&&IMG[fr]){sprite(fr,x,y+H*0.06,H*fm.h/m.h,f);TINT=saveT;o.globalAlpha=1;return true}}
-  const bob=amp?-Math.abs(Math.cos(ph))*0.03*m.h:0;
-  o.save();o.translate(x,y);o.scale(f*sc,sc);o.translate(-m.ax*m.w,-m.h);
-  personLegs(C,m,ph,amp,!!o2.air);
-  o.drawImage(im_(C.b),0,bob+(o2.air?-0.01*m.h:0));
+  if(C.fly&&(o2.air||o2.fly)){const fr=C.fly[0],fm=META[fr];
+    if(fm&&IMG[fr]){const HH=H*fm.h/m.h,fl=Math.sin(t*(o2.flut?7.2:3.6)+(o2.wph||0));
+      drawAngelFly(x,y+H*0.06,f,HH,fr,fl*0.16,fl*HH*0.045);TINT=saveT;o.globalAlpha=1;return true}}
+  const bob=amp?-Math.abs(Math.cos(ph))*0.045*m.h:Math.sin(t*2.1+(o2.wph||x))*0.018*m.h;
+  const lean=amp*0.05*Math.sin(ph);
+  const wing=C.fly?Math.sin(t*3.6+(o2.wph||0))*0.1:0;
+  const air=!!o2.air;
+  o.save();o.translate(x,y);o.scale(f*sc,sc);o.rotate(lean);o.translate(-m.ax*m.w,-m.h);
+  personLegs(C,m,ph,amp,air,0);
+  if(air)personLegs(C,m,ph,amp,true,1);
+  const shx=m.ax*m.w,shy=m.h*0.32;
+  o.save();o.translate(shx,shy+bob*0.3);o.rotate(wing);o.translate(-shx,-shy);o.drawImage(im_(C.b),0,bob+(air?-0.01*m.h:0));o.restore();
+  if(!air)personLegs(C,m,ph,amp,false,1);   // near sandal in front of the robe so the step reads
   o.restore();TINT=saveT;o.globalAlpha=1;return true}
 function drawChar(x,y,f,ph,L,o2={}){const k=L.k||'shep';
   if(L.k==='angel'&&!o2.air&&!o2.fly&&o2.hover)o2.fly=1;
@@ -194,27 +208,30 @@ function taper(x1,y1,w1,x2,y2,w2,fill,shadeC){const dx=x2-x1,dy=y2-y1,L=Math.hyp
   o.beginPath();o.moveTo(x1+nx*w1/2,y1+ny*w1/2);o.lineTo(x2+nx*w2/2,y2+ny*w2/2);o.lineTo(x2-nx*w2/2,y2-ny*w2/2);o.lineTo(x1-nx*w1/2,y1-ny*w1/2);o.closePath();o.fillStyle=fill;o.fill();
   if(shadeC){const gr=o.createLinearGradient(x1-nx*w1/2,y1-ny*w1/2,x1+nx*w1/2,y1+ny*w1/2);gr.addColorStop(0,shadeC);gr.addColorStop(0.55,'rgba(0,0,0,0)');gr.addColorStop(1,'rgba(255,240,220,.14)');o.fillStyle=gr;o.fill()}
   o.fillStyle=fill;o.beginPath();o.arc(x1,y1,w1/2,0,TAU);o.fill();o.beginPath();o.arc(x2,y2,w2/2,0,TAU);o.fill()}
-function quadLeg(hx,hy,L,p,amp,Q,far,front,Hh){const s=Math.sin(p),c=Math.cos(p),th=amp*(Q.sw||0.34)*s,kn=amp*(Q.kb||0.75)*Math.max(0,c);
+function quadLeg(hx,hy,L,p,amp,Q,far,front,Hh){const s=Math.sin(p),c=Math.cos(p),th=amp*(Q.sw||0.42)*s,kn=amp*(Q.kb||0.82)*Math.max(0,c);
   const st=c<=0?1/Math.cos(th):1,l1=L*0.48*st,l2=L*0.52*st,a1=th+(front?0.08:-0.3)*kn,a2=th-kn*(front?1:0.55);
   const kx=hx+Math.sin(a1)*l1,ky=hy+Math.cos(a1)*l1,fx=kx+Math.sin(a2)*l2,fy=Math.min(hy+L,ky+Math.cos(a2)*l2);
-  const W1=Q.wt*Hh,W2=Q.ws*Hh;if(!Q.ctD){Q.ctD=mix(Q.ct,-0.3);Q.csD=mix(Q.cs,-0.3);Q.hfD=mix(Q.hf,-0.3)}const CT=far?Q.ctD:Q.ct,CS=far?Q.csD:Q.cs,HF=far?Q.hfD:Q.hf;
-  o.save();taper(hx,hy-W1*0.3,W1*1.3,kx,ky,W2*1.15,CT,'rgba(0,0,0,.34)');if(Q.knee){o.fillStyle=CS;o.beginPath();o.ellipse(kx,ky,W2*0.85,W2*1.05,0,0,TAU);o.fill()}
+  const W1=Q.wt*Hh,W2=Q.ws*Hh;if(!Q.ctD){Q.ctD=mix(Q.ct,-0.3);Q.csD=mix(Q.cs,-0.3);Q.hfD=mix(Q.hf,-0.3)}const coat=!far&&furPat(Q),CT=coat||(far?Q.ctD:Q.ct),CS=coat||(far?Q.csD:Q.cs),HF=far?Q.hfD:Q.hf;
+  o.save();taper(hx,hy-W1*0.3,W1*1.3,kx,ky,W2*1.15,CT,'rgba(0,0,0,.34)');if(Q.knee){o.fillStyle=typeof CS==='string'?CS:Q.cs;o.beginPath();o.ellipse(kx,ky,W2*0.85,W2*1.05,0,0,TAU);o.fill()}
   taper(kx,ky,W2*1.1,fx,fy-W2*0.5,W2*0.8,CS,'rgba(0,0,0,.34)');
   o.translate(fx,fy);o.rotate(a2*0.6);o.fillStyle=HF;o.beginPath();o.moveTo(-W2*0.62,-W2*0.95);o.lineTo(W2*0.7,-W2*0.95);o.lineTo(W2*0.98,0);o.lineTo(-W2*0.72,0);o.closePath();o.fill();o.restore();
   if(far){/* far legs sit in the body's shadow */}}
-function drawQuad(x,y,f,ph,mv,k,o2={}){const Q=QD[k];if(!Q)return false;const m=META[Q.b];if(!m||!IMG[Q.b])return false;const H=o2.h||Q.h,sc=H/m.h,amp=mv?1:0,Hh=m.h,W=m.w;
-  const bob=amp*0.012*Hh*Math.cos(2*ph);o.save();o.translate(x,y);o.scale(f*sc,sc);o.translate(-m.ax*W,-Hh);
+function drawQuad(x,y,f,ph,mv,k,o2={}){const Q=QD[k];if(!Q)return false;const m=META[Q.b];if(!m||!IMG[Q.b])return false;const H=o2.h||Q.h,sc=H/m.h,amp=gaitAmp(mv,o2),Hh=m.h,W=m.w;
+  const bob=amp*0.022*Hh*Math.cos(2*ph)+(1-amp)*Math.sin(t*2.1+x)*0.016*Hh,rock=amp*0.05*Math.sin(2*ph+0.4);
+  o.save();o.translate(x,y);o.scale(f*sc,sc);o.translate(-m.ax*W,-Hh);
   const [hb,fr]=Q.legs,fs=Q.fs*W;
   o.save();quadLeg(hb[0]*W-fs,hb[1]*Hh,(1-hb[1])*Hh,ph+Math.PI,amp,Q,true,false,Hh);quadLeg(fr[0]*W-fs,fr[1]*Hh,(1-fr[1])*Hh,ph,amp,Q,true,true,Hh);o.restore();
   quadLeg(hb[0]*W,hb[1]*Hh,(1-hb[1])*Hh,ph,amp,Q,false,false,Hh);quadLeg(fr[0]*W,fr[1]*Hh,(1-fr[1])*Hh,ph+Math.PI,amp,Q,false,true,Hh);
-  o.drawImage(im_(Q.b),0,bob);o.restore();return true}
+  o.save();o.translate(m.ax*W,Hh*0.42);o.rotate(rock);o.translate(-m.ax*W,-Hh*0.42);o.drawImage(im_(Q.b),0,bob);o.restore();
+  o.restore();return true}
 function drawSheep(x,y,f,ph,mv,o2={}){drawQuad(x,y,f,ph,mv,o2.col?'goat':(o2.lamb?'lamb':'sheep'),o2);
   if(o2.bow){o.fillStyle=o2.bow;o.beginPath();o.arc(x+f*4.3,y-6.3,0.9,0,TAU);o.fill()}}
 function drawDonkey(x,y,f,ph,mv,o2={}){drawQuad(x,y,f,ph,mv,o2.rider?'ride':'donkey',o2)}
 function drawOx(x,y,f,ph,mv,o2={}){drawQuad(x,y,f,ph,mv,'ox',o2)}
 // camels: their own painted legs, swung at the hip and bent at the knee (diagonal pairs step together)
-function camelRig(x,y,f,ph,mv,n,h){const R=META[n+'_rig'],m=META[n];if(!R||!R.legs||!IMG[n+'_rig'])return false;const Hh=m.h,W=m.w,sc=h/Hh,amp=mv?1:0;
-  const bob=amp*0.010*Hh*Math.cos(2*ph);o.save();o.translate(x,y);o.scale(f*sc,sc);o.translate(-m.ax*W,-Hh);
+function camelRig(x,y,f,ph,mv,n,h,ampIn){const R=META[n+'_rig'],m=META[n];if(!R||!R.legs||!IMG[n+'_rig'])return false;const Hh=m.h,W=m.w,sc=h/Hh,amp=ampIn!=null?ampIn:(mv?1:0);
+  const bob=amp*0.014*Hh*Math.cos(2*ph)+(1-amp)*Math.sin(t*1.8+x)*0.01*Hh,rock=amp*0.03*Math.sin(2*ph);
+  o.save();o.translate(x,y);o.scale(f*sc,sc);o.translate(-m.ax*W,-Hh);
   const PH=[0,Math.PI,Math.PI,0];
   R.legs.forEach((L,i)=>{const p=ph+PH[i],sn=Math.sin(p),cs=Math.cos(p),front=i>=2;
     const a1=-amp*(front?0.22:0.2)*sn,k=amp*(front?0.62:0.45)*Math.max(0,cs),lift=amp*0.02*Hh*Math.max(0,cs);
@@ -222,8 +239,9 @@ function camelRig(x,y,f,ph,mv,n,h){const R=META[n+'_rig'],m=META[n];if(!R||!R.le
     const T=L.t,S=L.s;
     o.save();o.translate(kx-hx,ky-hy);o.rotate(k);o.drawImage(im_(S[0]),S[1]-kx,S[2]-ky);o.restore();
     o.drawImage(im_(T[0]),T[1]-hx,T[2]-hy);o.restore()});
-  o.drawImage(im_(n+'_rig'),0,bob);o.restore();return true}
-function drawCamel(x,y,f,ph,mv,o2={}){const n=o2.blanket==='#3b4fa8'?'camel2':'camel1';if(!camelRig(x,y,f,ph,mv,n,QD[n].h))drawQuad(x,y,f,ph,mv,n,o2)}
+  o.save();o.translate(m.ax*W,Hh*0.38);o.rotate(rock);o.translate(-m.ax*W,-Hh*0.38);o.drawImage(im_(n+'_rig'),0,bob);o.restore();
+  o.restore();return true}
+function drawCamel(x,y,f,ph,mv,o2={}){const n=o2.blanket==='#3b4fa8'?'camel2':'camel1';if(!camelRig(x,y,f,ph,mv,n,o2.h||QD[n].h,o2.amp))drawQuad(x,y,f,ph,mv,n,o2)}
 // a dove: painted wing frames up / level / down / level, flapping all the time
 function drawBird(x,y,f,ph,sz=9){const fr=['dove0','dove1','dove2','dove1'][Math.floor(((t*11+ph)%4+4)%4)],m=META[fr];if(!m)return;const h=sz*m.h/120;sprite(fr,x,y+h/2,h,f)}
 // ---------- props (painted)
@@ -574,7 +592,7 @@ function update(dt){t+=dt;if(toastT>0)toastT-=dt;if(shake>0)shake=Math.max(0,sha
   if(py>GY+0.5){const gp=gapAt(px0);if(gp)H.x=clamp(H.x,gp[0]+3,gp[1]-3)}
   if(H.vy>=0&&py<=GY+0.5&&H.y>=GY&&overSeg(H.x)){H.y=GY;H.vy=0;H.onG=true}
   else if(H.vy>=0){for(const p of W.plats){if(H.x>p.x-2&&H.x<p.x+p.w+2&&py<=p.y+0.5&&H.y>=p.y){H.y=p.y;H.vy=0;H.onG=true;H.onPlat=p;break}}}
-  if(H.onG&&mv)H.ph+=dt*12;
+  easeAmp(H,dt,!!(H.onG&&mv));
   // last safe solid ground (respawn point): well inside a ground segment or a still platform, away from thorns
   if(H.onG){if(H.onPlat){const p=H.onPlat;if(!p.mv&&H.x>p.x+4&&H.x<p.x+p.w-4)H.safe={x:H.x,y:H.y}}
     else{const sg=W.segs.find(s=>H.x>=s[0]+12&&H.x<=s[1]-12);if(sg&&!W.thorns.some(th=>Math.abs(th.x-H.x)<18))H.safe={x:H.x,y:H.y}}}
@@ -590,19 +608,19 @@ function update(dt){t+=dt;if(toastT>0)toastT-=dt;if(shake>0)shake=Math.max(0,sha
   nearAct=findNear();
   // sheep (Shepherds' Field): follow when you walk near them; nothing is thrown
   if(W.sheep.length){let j=0;const fol=W.sheep.filter(s=>s.st==='follow').sort((a,b)=>a.fo-b.fo);const home=H.x<W.fold.x1+40;
-    for(const s of W.sheep){s.ph+=dt*10;const ox=s.x;
+    for(const s of W.sheep){const ox=s.x;
       if(s.st==='lost'){s.wt=(s.wt||0)-dt;if(s.wt<=0){s.wt=rnd(1.5,3.5);s.walk=Math.random()<0.55;if(s.walk)s.f=s.x>s.x0+14?-1:s.x<s.x0-14?1:pick([1,-1])}if(s.walk)s.x+=s.f*7*dt;
         if(Math.abs(H.x-s.x)<20&&Math.abs(H.y-s.y)<16){s.st='follow';s.fo=performance.now()+Math.random();SFX.bleat();float(s.x,s.y-20,s.name+' follows you!','#ffffff');bubble(s,'Baa!',1.2)}}
       else if(s.st==='follow'){const k=fol.indexOf(s);if(home){const tx=foldX(Math.min(7,ST.fold+k));s.x=lerp(s.x,tx,Math.min(1,dt*2.5));s.y=groundY(s.x);if(s.x<W.fold.x1-4){s.st='home';const used=W.sheep.filter(q=>q.st==='home'&&q!==s).map(q=>q.slot);let bs=0,bd=1e9;for(let j2=0;j2<8;j2++)if(!used.includes(j2)&&Math.abs(foldX(j2)-s.x)<bd){bd=Math.abs(foldX(j2)-s.x);bs=j2}s.slot=bs;ST.fold++;SFX.bleat();float(s.x,s.y-20,s.name+' is home!','#bdf3ff');objToast('fold')}}
         else{const p=trailAt((k+1)*17);s.x=lerp(s.x,p.x,Math.min(1,dt*7));s.y=groundY(s.x)}}
       else{s.x=lerp(s.x,foldX(s.slot||0),Math.min(1,dt*2.5));s.y=GY;s.wt=(s.wt||0)-dt;if(s.wt<=0){s.wt=rnd(2,5);s.face=pick([1,-1])}}   // home: each sheep keeps its own spot in the fold and just turns now and then (no walking through each other)
-      const dx=s.x-ox;s.mv=Math.abs(dx)>0.02;if(Math.abs(dx)>0.05)s.f=dx>0?1:-1;else if(s.st==='home'&&s.face)s.f=s.face}}
+      const dx=s.x-ox;s.mv=Math.abs(dx)>0.02;if(Math.abs(dx)>0.05)s.f=dx>0?1:-1;else if(s.st==='home'&&s.face)s.f=s.face;easeAmp(s,dt,!!s.mv)}}
   // followers (Mary on the donkey, the camels)
   W.followers.forEach((fo,i)=>{const ox=fo.x;if(fo.until&&H.x>fo.until)fo.parked=true;if(!fo.parked){const p=trailAt(followGap(i));fo.x=lerp(fo.x,p.x,Math.min(1,dt*7));fo.y=groundY(fo.x)}
-    const dx=fo.x-ox;fo.mv=Math.abs(dx)>0.02;if(Math.abs(dx)>0.05)fo.f=dx>0?1:-1;if(fo.mv)fo.ph+=dt*9});
+    const dx=fo.x-ox;fo.mv=Math.abs(dx)>0.02;if(Math.abs(dx)>0.05)fo.f=dx>0?1:-1;easeAmp(fo,dt,!!fo.mv)});
   // npcs walk (animals and villagers)
   for(const a of W.npcs){const ox=a.x;if(!a.calm){a.wt=(a.wt||0)-dt;if(a.wt<=0){a.wt=rnd(1,3);a.walk=Math.random()<0.7}if(a.walk){a.x+=a.f*a.sp*dt;if(a.x>a.x1){a.x=a.x1;a.f=-1}if(a.x<a.x0){a.x=a.x0;a.f=1}}}else a.f=H.x<a.x?-1:1;
-    a.mv=Math.abs(a.x-ox)>0.01;if(a.mv)a.ph+=dt*9}
+    a.mv=Math.abs(a.x-ox)>0.01;easeAmp(a,dt,!!a.mv)}
   for(const b of W.birds){b.x+=b.f*b.sp*dt;if(b.x<-30)b.x=W.len+20;if(b.x>W.len+30)b.x=-20}
   // the star (The Star level): it leads ahead, then stops over the house
   if(W.star){const tx=objDone('spark')?W.house.x+W.house.w/2:Math.min(H.x+45,W.house.x-40);W.star.x=lerp(W.star.x,tx,Math.min(1,dt*0.8))}
@@ -658,7 +676,7 @@ function drawWorld(){const cx=camX+(shake?rnd(-shake,shake)*0.4:0),cy=camY;o.set
   for(const h of W.houses){const x=h.x-cx;if(x+h.w<-10||x>VW+10)continue;drawHouse(x,by,h.w,h.h,{night,door:h.door,doorCol:h.doorCol,inn:h.inn,wx:h.x});
     if(h.star)glow(x+h.w/2,by-h.h,objDone('spark')?70:30,'255,250,220',0.35)}
   if(W.stable){const x=W.stable.x-cx;if(x>-80&&x<VW+80){const lit=level!==3||objDone('manger');drawStable(x,by,{lit,w:100});
-    if(level===6||level===8){drawChar(x-18,by,1,0,LOOKS.mary);drawChar(x+20,by,-1,0,LOOKS.joseph);drawManger(x+2,by,true,true)}}}
+    if(level===6||level===8){const sway=0.28+0.22*Math.abs(Math.sin(t*1.3));drawChar(x-18,by,1,t*1.7,LOOKS.mary,{mv:true,amp:sway});drawChar(x+20,by,-1,t*1.7+1.2,LOOKS.joseph,{mv:true,amp:sway});drawManger(x+2,by,true,true)}}}
   for(const p of W.plats)drawPlat(p,cx,cy);
   drawGround(cx,cy);
   for(const th2 of W.thorns)if(th2.x-cx>-10&&th2.x-cx<VW+10)drawThorn(th2.x-cx,by);
@@ -671,10 +689,11 @@ function drawWorld(){const cx=camX+(shake?rnd(-shake,shake)*0.4:0),cy=camY;o.set
     else if(s.k==='see'){if(needMet(s))glow(x,y-10,30+6*Math.sin(t*3),'255,240,180',0.5)}}
   for(const k of W.items){if(k.got)continue;const x=k.x-cx,y=k.y-cy;if(x<-20||x>VW+20||y<-20||y>VH+20)continue;
     if(k.k==='tool')drawTool(k.tool,x,y);else if(k.k==='straw')drawStraw(x,y);else if(k.k==='plank')drawPlank(x,y);else if(k.k==='note')drawNote(x,y,k.ph);else drawSpark(x,y-6,k.ph)}
-  for(const a of W.npcs){const x=a.x-cx;if(x<-30||x>VW+30)continue;if(a.k==='ox')drawOx(x,a.y-cy,a.f,a.ph,a.mv);else if(a.k==='donkey')drawDonkey(x,a.y-cy,a.f,a.ph,a.mv);else if(a.k==='goat')drawSheep(x,a.y-cy,a.f,a.ph,a.mv,{col:'#b08a60'});else drawChar(x,a.y-cy,a.f,a.ph,LOOKS[a.look],{mv:a.mv})}
-  for(const s of W.sheep){const x=s.x-cx;if(x<-20||x>VW+20)continue;drawSheep(x,s.y-cy,s.f,s.ph,s.mv,{bow:['#e04a5a','#3a7ae0','#e0b030','#3aa060','#a04ae0','#e07a30','#30b0c0','#ff7ab0'][s.i]})}
-  for(let i=W.followers.length-1;i>=0;i--){const fo=W.followers[i],x=fo.x-cx;if(fo.k==='camel')drawCamel(x,fo.y-cy,fo.f,fo.ph,fo.mv,{blanket:fo.blanket});else if(fo.k==='magus')drawChar(x,fo.y-cy,fo.f,fo.ph,LOOKS[fo.look],{mv:fo.mv});else drawDonkey(x,fo.y-cy,fo.f,fo.ph,fo.mv,{rider:1})}
-  const blink=H.inv>0&&Math.floor(t*12)%2;if(!blink||H.inv<=0)drawChar(H.x-cx,H.y-cy,H.f,H.ph,H.look,{mv:Math.abs(H.vx)>1,air:!H.onG,flut:H.flut,wph:H.flut?3:0});else drawChar(H.x-cx,H.y-cy,H.f,H.ph,H.look,{mv:Math.abs(H.vx)>1,air:!H.onG,flut:H.flut,alpha:0.35});
+  for(const a of W.npcs){const x=a.x-cx;if(x<-30||x>VW+30)continue;const g2={amp:a.amp||0};if(a.k==='ox')drawOx(x,a.y-cy,a.f,a.ph,a.mv,g2);else if(a.k==='donkey')drawDonkey(x,a.y-cy,a.f,a.ph,a.mv,g2);else if(a.k==='goat')drawSheep(x,a.y-cy,a.f,a.ph,a.mv,Object.assign({col:'#b08a60'},g2));else drawChar(x,a.y-cy,a.f,a.ph,LOOKS[a.look],{mv:a.mv,amp:a.amp||0})}
+  for(const s of W.sheep){const x=s.x-cx;if(x<-20||x>VW+20)continue;drawSheep(x,s.y-cy,s.f,s.ph,s.mv,{bow:['#e04a5a','#3a7ae0','#e0b030','#3aa060','#a04ae0','#e07a30','#30b0c0','#ff7ab0'][s.i],amp:s.amp||0})}
+  for(let i=W.followers.length-1;i>=0;i--){const fo=W.followers[i],x=fo.x-cx;if(fo.k==='camel')drawCamel(x,fo.y-cy,fo.f,fo.ph,fo.mv,{blanket:fo.blanket,amp:fo.amp||0});else if(fo.k==='magus')drawChar(x,fo.y-cy,fo.f,fo.ph,LOOKS[fo.look],{mv:fo.mv,amp:fo.amp||0});else drawDonkey(x,fo.y-cy,fo.f,fo.ph,fo.mv,{rider:1,amp:fo.amp||0})}
+  const blink=H.inv>0&&Math.floor(t*12)%2,hop={mv:Math.abs(H.vx)>1,amp:H.amp||0,air:!H.onG,flut:H.flut,wph:H.flut?3:0};
+  if(!blink||H.inv<=0)drawChar(H.x-cx,H.y-cy,H.f,H.ph,H.look,hop);else drawChar(H.x-cx,H.y-cy,H.f,H.ph,H.look,Object.assign({alpha:0.35},hop));
   if(W.star)drawStar(W.star.x-cx,30,2);
   if(level===5&&W.top){const ty=W.top.y-cy;if(ty>-40&&ty<VH+40)for(let i=0;i<4;i++)drawChar(W.top.x+18+i*34-cx,ty-4+(i%2?-3:0)+Math.sin(t*2+i)*1.5,i<2?1:-1,0,LOOKS.angel,{wph:i*1.3,fly:1})}
   TINT=null;
@@ -925,8 +944,10 @@ if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceW
 if(window.__QA){
   window.__T={
     go(n){startLevel(n);STORY=null;state='play'},
+    screen(s){paused=false;STORY=null;state=s},
+    at(x){if(!H||!W)return;H.x=clamp(x,8,W.len-8);H.vx=H.vy=0;H.onG=true;H.y=W.type==='climb'?H.y:GY;camFollow(true);resetTrail()},
     skip(){if(STORY){const d=STORY.done;STORY=null;d()}},
-    info(){return {state,level,hearts,maxHearts,x:Math.round(H?H.x:0),y:Math.round(H?H.y:0),f:H?H.f:0,inv:H?+H.inv.toFixed(2):0,ST:ST?JSON.parse(JSON.stringify(ST)):null,t:ST?Math.round(ST.t):0}},
+    info(){return {state,level,hearts,maxHearts,x:Math.round(H?H.x:0),y:Math.round(H?H.y:0),f:H?H.f:0,amp:H?+(H.amp||0).toFixed(2):0,inv:H?+H.inv.toFixed(2):0,ST:ST?JSON.parse(JSON.stringify(ST)):null,t:ST?Math.round(ST.t):0,stable:W&&W.stable?Math.round(W.stable.x):null,npcs:W&&W.npcs?W.npcs.map(a=>({k:a.k,x:Math.round(a.x),mv:!!a.mv})):null,fol:W&&W.followers?W.followers.map(f=>({k:f.k,x:Math.round(f.x)})):null}},
     complete(){const L=Lv();for(const q of L.obj)ST[q.id]=q.n;finishLevel()},
     unlockAll(){unlocked=NL;LS.set('unlock',NL)},
     // anatomy checks on the real renderer: mirrored facing is an exact mirror (face, body and feet turn together),
@@ -984,5 +1005,5 @@ if(window.__QA){
     if(A.tgtT>14&&tg.o&&typeof tg.o==='object'){H.x=tg.x;H.y=tg.y;H.vy=0;A.assists++;A.tgtT=0}}
 }
 
-window.__VERSION=45;
+window.__VERSION=46;
 </script></body></html>
